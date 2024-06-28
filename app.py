@@ -66,11 +66,11 @@ def process_event(event, data):
 
 def send_message_to_lark(message):
     payload = {
+        'receive_id': 'oc_7161a7463ab72be5e6ee11ae1bde7306',  # Replace with actual receive_id
         'msg_type': 'text',
         'content': json.dumps({
             'text': message,
         }),
-        'receive_id': 'oc_7161a7463ab72be5e6ee11ae1bde7306',  # Replace with actual receive_id
     }
 
     headers = {
