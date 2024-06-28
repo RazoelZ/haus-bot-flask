@@ -64,26 +64,41 @@ def process_event(event, data):
     print('Message to send to Lark:', message)
     send_message_to_lark(message)
 
+import requests
+import json
+
 def send_message_to_lark(message):
-    url = 'https://open.larksuite.com/open-apis/im/v1/messages'
-    headers = {
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer t-g2056seLGKC77FNGUFMKPJEITNFB3SNSEOUPKGXT'
-    }
     payload = {
         'msg_type': 'text',
         'content': json.dumps({
             'text': message,
         }),
-        'receive_id': 'ou_7d8a6e6df7621556ce0d21922b676706ccs'  # Replace with actual receive_id
+        'receive_id': 'oc_7161a7463ab72be5e6ee11ae1bde7306',  # Replace with actual receive_id
+    }
+
+    headers = {
+        'Authorization': f'Bearer {AUTH_TOKEN}',
+        'Content-Type': 'application/json',
+    }
+
+    params = {
+        'receive_id_type': 'chat_id',  # Specify the correct type of receive_id
     }
 
     try:
-        response = requests.post(url, json=payload, headers=headers)
-        response.raise_for_status()
+        response = requests.post(LARK_API_URL, json=payload, headers=headers, params=params)
+        response.raise_for_status()  # Raise an exception for HTTP errors (4xx, 5xx)
         print('Message sent to Lark:', response.json())
     except requests.exceptions.RequestException as error:
         print('Failed to send message to Lark:', error)
+        if response:
+            print('Error code:', response.status_code)
+
+# Example usage:
+if __name__ == '__main__':
+    message = 'This is a test message to Lark.'
+    send_message_to_lark(message)
+
 
 
 def expose_flask_app():
