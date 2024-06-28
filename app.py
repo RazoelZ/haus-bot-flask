@@ -42,35 +42,27 @@ def home():
 @app.route('/webhook', methods=['POST'])
 def webhook():
     data = request.json
+    print('Request Body:', data) 
     if not data:
         return 'Invalid JSON payload', 400
 
-    event_type = request.headers.get('X-GitHub-Event')
-    process_event(event_type, data)
+    process_event(request.headers.get('X-GitHub-Event'), data)
     return '', 204
 
-def process_event(event_type, data):
-    if event_type == 'push':
-        handle_push_event(data)
-    elif event_type == 'pull_request':
-        handle_pull_request_event(data)
+def process_event(event, data):
+    message = ''
+    if event == 'push':
+        branch = data['ref'].split('/').pop()  # Extract branch name from ref
+        commits = '\n'.join([f"- {commit['message']} by {commit['author']['name']}" for commit in data['commits']])
+        message = f"New push to {data['repository']['name']} on branch {branch} by {data['pusher']['name']}:\n{commits}"
+    elif event == 'pull_request':
+        source_branch = data['pull_request']['head']['ref']
+        target_branch = data['pull_request']['base']['ref']
+        message = f"New pull request #{data['number']} in {data['repository']['name']} from {source_branch} to {target_branch}."
     else:
-        handle_generic_event(event_type, data)
-
-def handle_push_event(data):
-    branch = data['ref'].split('/')[-1]  # Extract branch name from ref
-    commits = '\n'.join([f"- {commit['message']} by {commit['author']['name']}" for commit in data['commits']])
-    message = f"New push to {data['repository']['name']} on branch {branch} by {data['pusher']['name']}:\n{commits}"
-    send_message_to_lark(message)
-
-def handle_pull_request_event(data):
-    source_branch = data['pull_request']['head']['ref']
-    target_branch = data['pull_request']['base']['ref']
-    message = f"New pull request #{data['number']} in {data['repository']['name']} from {source_branch} to {target_branch}."
-    send_message_to_lark(message)
-
-def handle_generic_event(event_type, data):
-    message = f"New event: {event_type}"
+        message = f"New event: {event}"
+    
+    print('Message to send to Lark:', message)
     send_message_to_lark(message)
 
 def send_message_to_lark(message):
@@ -97,6 +89,7 @@ def send_message_to_lark(message):
         print('Message sent to Lark:', response.json())
     except requests.exceptions.RequestException as error:
         print('Failed to send message to Lark:', error)
+
 
 def expose_flask_app():
     # Start ngrok tunnel to expose Flask app
