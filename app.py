@@ -90,7 +90,6 @@ def send_message_to_lark(message):
         print('Message sent to Lark:', response.json())
         print('Response status code:', response.status_code)
     except requests.exceptions.RequestException as error:
-        print('Failed to send message to Lark:', error)
         print('Message sent to Lark:', response.json())
         print('Response status code:', response.status_code)
 
