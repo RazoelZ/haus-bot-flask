@@ -64,9 +64,6 @@ def process_event(event, data):
     print('Message to send to Lark:', message)
     send_message_to_lark(message)
 
-import requests
-import json
-
 def send_message_to_lark(message):
     payload = {
         'msg_type': 'text',
@@ -91,14 +88,6 @@ def send_message_to_lark(message):
         print('Message sent to Lark:', response.json())
     except requests.exceptions.RequestException as error:
         print('Failed to send message to Lark:', error)
-        if response:
-            print('Error code:', response.status_code)
-
-# Example usage:
-if __name__ == '__main__':
-    message = 'This is a test message to Lark.'
-    send_message_to_lark(message)
-
 
 
 def expose_flask_app():
