@@ -4,6 +4,8 @@ import hashlib
 import json
 import requests
 import os
+import threading
+from pyngrok import ngrok
 from dotenv import load_dotenv
 
 # Load environment variables from .env file
@@ -65,7 +67,7 @@ def send_message_to_lark(message):
         'content': json.dumps({
             'text': message,
         }),
-        'receive_id': 'oc_da933eb5b74c65d365a70b5277ac459d',  # Replace with actual receive_id
+        'receive_id': 'oc_7161a7463ab72be5e6ee11ae1bde7306',  # Replace with actual receive_id
     }
 
     headers = {
