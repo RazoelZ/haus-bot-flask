@@ -42,7 +42,6 @@ def home():
 @app.route('/webhook', methods=['POST'])
 def webhook():
     data = request.json
-    print('Received data:', data)
     if not data:
         return 'Invalid JSON payload', 400
 
@@ -85,11 +84,11 @@ def send_message_to_lark(message):
 
     try:
         response = requests.post(LARK_API_URL, json=payload, headers=headers, params=params)
-        response.raise_for_status()  # Raise an exception for HTTP errors (4xx, 5xx)
+        response.raise_for_status()
         print('Message sent to Lark:', response.json())
     except requests.exceptions.RequestException as error:
+        print('Failed to send message to Lark:', payload)
         print('Failed to send message to Lark:', error)
-
 
 def expose_flask_app():
     # Start ngrok tunnel to expose Flask app
