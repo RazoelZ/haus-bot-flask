@@ -84,9 +84,10 @@ def send_message_to_lark(message):
     }
 
     try:
+        print('Message sent to Lark:', response.json())
         response = requests.post(LARK_API_URL, json=payload, headers=headers, params=params)
         response.raise_for_status()  # Raise an exception for HTTP errors (4xx, 5xx)
-        print('Message sent to Lark:', response.json())
+        
     except requests.exceptions.RequestException as error:
         print('Failed to send message to Lark:', error)
         # Optionally, log more details about the error for troubleshooting
