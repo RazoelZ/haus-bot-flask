@@ -89,6 +89,8 @@ def send_message_to_lark(message):
     except requests.exceptions.RequestException as error:
         print('Failed to send message to Lark:', payload)
         print('Failed to send message to Lark:', error)
+        if error.response is not None:
+            print('Failed to send message to Lark:', error.response.text)
 
 def expose_flask_app():
     # Start ngrok tunnel to expose Flask app
