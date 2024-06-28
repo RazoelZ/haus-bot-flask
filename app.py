@@ -65,27 +65,26 @@ def process_event(event, data):
     send_message_to_lark(message)
 
 def send_message_to_lark(message):
+    url = 'https://open.larksuite.com/open-apis/im/v1/messages'
+    headers = {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer t-g2056seLGKC77FNGUFMKPJEITNFB3SNSEOUPKGXT'
+    }
     payload = {
         'msg_type': 'text',
-        'content': 'Hello, World!',
-        'receive_id': 'oc_7161a7463ab72be5e6ee11ae1bde7306',  # Replace with actual receive_id
-    }
-
-    headers = {
-        'Authorization': f'Bearer {AUTH_TOKEN}',
-        'Content-Type': 'application/json',
-    }
-
-    params = {
-        'receive_id_type': 'chat_id',  # Specify the correct type of receive_id
+        'content': json.dumps({
+            'text': message,
+        }),
+        'receive_id': 'ou_7d8a6e6df7621556ce0d21922b676706ccs'  # Replace with actual receive_id
     }
 
     try:
-        response = requests.post(LARK_API_URL, json=payload, headers=headers, params=params)
+        response = requests.post(url, json=payload, headers=headers)
         response.raise_for_status()
         print('Message sent to Lark:', response.json())
     except requests.exceptions.RequestException as error:
         print('Failed to send message to Lark:', error)
+
 
 def expose_flask_app():
     # Start ngrok tunnel to expose Flask app
