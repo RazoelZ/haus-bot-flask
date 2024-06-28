@@ -66,7 +66,7 @@ def process_event(event, data):
 
 def send_message_to_lark(message):
     payload = {
-        "receive_id": "oc_7161a7463ab72be5e6ee11ae1bde7306",  # Replace with actual receive_id
+        "receive_id": "oc_da933eb5b74c65d365a70b5277ac459d",  # Replace with actual receive_id
         "msg_type": "text",
         "content": json.dumps({
             "text": message,
