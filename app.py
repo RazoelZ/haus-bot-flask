@@ -42,6 +42,9 @@ def home():
 @app.route('/webhook', methods=['POST'])
 def webhook():
     data = request.json
+    if not data:
+        return 'Invalid JSON payload', 400
+
     process_event(request.headers.get('X-GitHub-Event'), data)
     return '', 204
 
