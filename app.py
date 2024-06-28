@@ -69,7 +69,7 @@ def send_message_to_lark(message):
     payload = {
         'msg_type': 'text',
         'content': json.dumps({
-            'text': 'text content',
+            'text': message,
         }),
         'receive_id': 'oc_7161a7463ab72be5e6ee11ae1bde7306',  # Replace with actual receive_id
     }
@@ -89,6 +89,7 @@ def send_message_to_lark(message):
         print('Message sent to Lark:', response.json())
     except requests.exceptions.RequestException as error:
         print('Failed to send message to Lark:', error)
+        # Optionally, log more details about the error for troubleshooting
 
 
 def expose_flask_app():
