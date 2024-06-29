@@ -1,12 +1,12 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request
 import hmac
 import hashlib
-import json
-import requests
 import os
 import threading
 from pyngrok import ngrok
 from dotenv import load_dotenv
+import LarkController as lark
+import Middleware as middleware
 
 # Load environment variables from .env file
 load_dotenv()
@@ -14,9 +14,6 @@ load_dotenv()
 app = Flask(__name__)
 PORT = 3000
 VERIFY_TOKEN = os.getenv('VERIFY_TOKEN')
-LARK_API_URL = os.getenv('LARK_API_URL')
-AUTH_TOKEN = os.getenv('AUTH_TOKEN')
-
 
 def verify_signature(req):
     signature = req.headers.get('X-Hub-Signature')
@@ -45,52 +42,17 @@ def webhook():
     if not data:
         return 'Invalid JSON payload', 400
 
-    process_event(request.headers.get('X-GitHub-Event'), data)
+    middleware.process_event(request.headers.get('X-GitHub-Event'), data)
     return '', 204
 
-def process_event(event, data):
-    message = ''
-    if event == 'push':
-        branch = data['ref'].split('/').pop()  # Extract branch name from ref
-        commits = '\n'.join([f"- {commit['message']} by {commit['author']['name']}" for commit in data['commits']])
-        message = f"New push to {data['repository']['name']} on branch {branch} by {data['pusher']['name']}:\n{commits}"
-    elif event == 'pull_request':
-        source_branch = data['pull_request']['head']['ref']
-        target_branch = data['pull_request']['base']['ref']
-        message = f"New pull request #{data['number']} in {data['repository']['name']} from {source_branch} to {target_branch}."
-    else:
-        message = f"New event: {event}"
-    
-    print('Message to send to Lark:', message)
-    send_message_to_lark(message)
+@app.route('/sendMessageTolark', methods=['POST'])
+def sendMessageToLark():
+    message = request.json.get('message')
+    if not message:
+        return 'Invalid message', 400
 
-def send_message_to_lark(message):
-    payload = {
-        "receive_id": "oc_da933eb5b74c65d365a70b5277ac459d",  # Replace with actual receive_id
-        "msg_type": "text",
-        "content": json.dumps({
-            "text": message,
-        }),
-    }
-
-    headers = {
-        'Authorization': f'Bearer {AUTH_TOKEN}',
-        'Content-Type': 'application/json',
-    }
-
-    params = {
-        'receive_id_type': 'chat_id',  # Specify the correct type of receive_id
-    }
-
-    try:
-        response = requests.post(LARK_API_URL, json=payload, headers=headers, params=params)
-        response.raise_for_status()
-        print('Message sent to Lark:', response.json())
-    except requests.exceptions.RequestException as error:
-        print('Failed to send message to Lark:', payload)
-        print('Failed to send message to Lark:', error)
-        if error.response is not None:
-            print('Failed to send message to Lark:', error.response.text)
+    lark.send_message_to_lark(message)
+    return '', 204
 
 def expose_flask_app():
     # Start ngrok tunnel to expose Flask app
