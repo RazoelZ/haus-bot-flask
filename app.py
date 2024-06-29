@@ -1,4 +1,5 @@
 from flask import Flask, request
+from flask_cors import CORS
 import hmac
 import hashlib
 import os
@@ -12,6 +13,8 @@ import Middleware as middleware
 load_dotenv()
 
 app = Flask(__name__)
+CORS(app)  # Enable CORS for all routes
+
 PORT = 3000
 VERIFY_TOKEN = os.getenv('VERIFY_TOKEN')
 
@@ -29,7 +32,7 @@ def verify_signature(req):
 
 @app.before_request
 def verify_request():
-    if request.method == 'POST' and not verify_signature(request):
+    if request.method == 'POST' and not verify_signature(request) and request.path == '/webhook':
         return 'Invalid signature', 400
 
 @app.route('/', methods=['GET'])
@@ -48,6 +51,7 @@ def webhook():
 @app.route('/sendMessageTolark', methods=['POST'])
 def sendMessageToLark():
     message = request.json.get('message')
+    print('Message to send to Lark:', message)
     if not message:
         return 'Invalid message', 400
 
