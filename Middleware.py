@@ -15,4 +15,4 @@ def process_event(event, data):
         message = f"New event: {event}"
     
     print('Message to send to Lark:', message)
-    lark.send_message_to_lark(message)
+    lark.send_message_to_lark_group(message)

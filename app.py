@@ -1,5 +1,6 @@
-from flask import Flask, request
+from flask import Flask, request, jsonify
 from flask_cors import CORS
+
 import hmac
 import hashlib
 import os
@@ -55,8 +56,23 @@ def sendMessageToLark():
     if not message:
         return 'Invalid message', 400
 
-    lark.send_message_to_lark(message)
+    lark.send_message_to_lark_group(message)
     return '', 204
+
+@app.route('/getUserFromDepartment', methods=['POST'])
+def getUserFromDepartment():
+    data = request.get_json()
+    department_id = data.get('department_id')
+    print('Department ID:', department_id)
+    if not department_id:
+        return jsonify({'error': 'Invalid department_id'}), 400
+
+    users = lark.get_user_id_from_department(department_id)
+    if users is None:
+        return jsonify({'error': 'Failed to retrieve users'}), 500
+
+    return jsonify(users), 200
+
 
 def expose_flask_app():
     # Start ngrok tunnel to expose Flask app
