@@ -33,7 +33,7 @@ def verify_signature(req):
 
 @app.before_request
 def verify_request():
-    if request.method == 'POST' and not verify_signature(request) and request.path == '/webhook':
+    if request.path == '/webhook' and not verify_signature(request):
         return 'Invalid signature', 400
 
 @app.route('/', methods=['GET'])
