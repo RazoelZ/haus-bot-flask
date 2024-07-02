@@ -65,7 +65,6 @@ def get_user_id_from_department(department_id):
         response = requests.get(LARK_API_USER_DEPARTMENT, headers=headers, params=params)
         response.raise_for_status()
         user_data = response.json()
-        print('User data from department:', user_data)
         users = []
         for item in user_data.get('data', {}).get('items', []):
             users.append({'name': item['name'], 'user_id': item['user_id']})
