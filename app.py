@@ -43,6 +43,7 @@ def home():
 @app.route('/webhook', methods=['POST'])
 def webhook():
     data = request.json
+    print('Received webhook:', data)
     if not data:
         return 'Invalid JSON payload', 400
 
