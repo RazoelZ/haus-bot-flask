@@ -1,6 +1,5 @@
 from flask import Flask, request, jsonify
 from flask_cors import CORS
-
 import hmac
 import hashlib
 import os
@@ -43,7 +42,6 @@ def home():
 @app.route('/webhook', methods=['POST'])
 def webhook():
     data = request.json
-    print('Received webhook:', data)
     if not data:
         return 'Invalid JSON payload', 400
 
@@ -58,6 +56,18 @@ def sendMessageToLark():
         return 'Invalid message', 400
 
     lark.send_message_to_lark_group(message)
+    return '', 204
+
+@app.route('/sendMessageTolarkChat', methods=['POST'])
+def sendMessageToLarkChat():
+    message = request.json.get('message')
+    receive_id = request.json.get('receive_id')
+    print('Message to send to Lark:', message)
+    print('Receive ID:', receive_id)
+    if not message:
+        return 'Invalid message', 400
+
+    lark.send_message_to_lark(message,receive_id)
     return '', 204
 
 @app.route('/getUserFromDepartment', methods=['POST'])
