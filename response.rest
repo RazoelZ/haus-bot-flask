@@ -1,7 +1,0 @@
-POST http://localhost:3000/getUserFromDepartment
-Authorization: Bearer t-g20572da3VEMR6K5EHMPL3UR2M4QHPFPNOEOSNTY
-Content-Type: application/json
-
-{
-    "department_id": "od-b9d1cc50992f360f1c25f89527274b97"
-}
